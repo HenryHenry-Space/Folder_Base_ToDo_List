@@ -1,0 +1,3 @@
+[console_scripts]
+folder-todo-gen = folder_todo_generator.cli:main
+ftg = folder_todo_generator.cli:main
