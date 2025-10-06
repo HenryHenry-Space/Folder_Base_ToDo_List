@@ -34,6 +34,13 @@ def main():
     )
     
     parser.add_argument(
+        "--tags",
+        nargs="*",
+        default=[],
+        help="Filter by tags (e.g., --tags frontend backend)"
+    )
+    
+    parser.add_argument(
         "--output",
         "-o",
         help="Output file path (default: print to stdout)"
@@ -45,7 +52,8 @@ def main():
         # Create generator
         generator = FolderTodoGenerator(
             max_depth=args.max_depth,
-            exclude_dirs=args.exclude_dirs
+            exclude_dirs=args.exclude_dirs,
+            tag_filter=args.tags
         )
         
         # Generate markdown

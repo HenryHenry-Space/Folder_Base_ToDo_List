@@ -7,6 +7,7 @@ A Python package that automatically reads any folder's structure and generates m
 - 📁 Recursively scans directory structures
 - 📝 Generates markdown-formatted todo lists
 - 🎯 Hierarchical organization with proper indentation
+- 🏷️ **Tag support with filtering capabilities**
 - 📊 Includes file sizes in human-readable format
 - 🚫 Smart exclusion of common system/build directories
 - ⚙️ Customizable exclusion patterns
@@ -50,11 +51,11 @@ folder-todo-gen /path/to/your/project
 # Save output to file
 folder-todo-gen . --output project_todo.md
 
-# Only include directories (exclude files)
-folder-todo-gen . --no-files
+# Filter by tags
+folder-todo-gen . --tags frontend ui urgent
 
-# Create collapsible folder structure
-folder-todo-gen . --collapsible --output collapsible_todo.md
+# Combine tag filtering with other options
+folder-todo-gen . --tags api backend --max-depth 3 --output backend_todo.md
 ```
 
 ### Advanced Options
@@ -63,11 +64,11 @@ folder-todo-gen . --collapsible --output collapsible_todo.md
 # Exclude additional directories
 folder-todo-gen . --exclude-dirs build dist temp
 
-# Exclude additional files
-folder-todo-gen . --exclude-files "*.log" "*.tmp"
+# Filter by multiple tags
+folder-todo-gen . --tags frontend backend api
 
 # Combine options
-folder-todo-gen /my/project --output todo.md --no-files --exclude-dirs venv
+folder-todo-gen /my/project --output todo.md --tags urgent --exclude-dirs venv --max-depth 2
 
 # Show version
 folder-todo-gen --version
@@ -76,13 +77,50 @@ folder-todo-gen --version
 folder-todo-gen --help
 ```
 
+## Tag System
+
+The folder-todo-generator supports a powerful tagging system for organizing and filtering your todos:
+
+### Adding Tags
+
+1. **Directory Name Tags**: Include tags directly in directory names using `#tag` syntax:
+   ```
+   frontend-#ui/
+   backend-#api/
+   docs-#documentation/
+   ```
+
+2. **Tag Files**: Create a `.tags` file in any directory containing tags:
+   ```bash
+   echo "#urgent #priority #review" > my-directory/.tags
+   ```
+
+3. **Combined Approach**: Use both methods together for maximum flexibility
+
+### Using Tags
+
+```bash
+# Show all directories with their tags
+folder-todo-gen .
+
+# Filter by specific tags
+folder-todo-gen . --tags frontend ui
+folder-todo-gen . --tags urgent
+folder-todo-gen . --tags api documentation
+
+# Example output with tags:
+# - [ ] **frontend-#ui/** `#priority` `#ui` `#urgent`
+#   - [ ] **components/**
+# - [ ] **backend-#api/** `#api`
+```
+
 ### Alternative Command
 
 You can also use the shorter `ftg` command:
 
 ```bash
 ftg .
-ftg /path/to/project --output todo.md
+ftg /path/to/project --output todo.md --tags frontend
 ```
 
 ## Programmatic Usage
@@ -195,3 +233,25 @@ The program automatically excludes common system and build directories:
 
 - Python 3.6 or higher
 - No external dependencies (uses only standard library)
+
+## Advanced Programmatic Usage with Tags
+
+```python
+from folder_todo_generator import FolderTodoGenerator
+
+# Basic usage
+generator = FolderTodoGenerator()
+todo_content = generator.generate_todo_markdown("/path/to/project")
+
+# With tag filtering
+tagged_generator = FolderTodoGenerator(tag_filter=["frontend", "ui"])
+filtered_todo = tagged_generator.generate_todo_markdown("/path/to/project")
+
+# Combine with other options
+custom_generator = FolderTodoGenerator(
+    max_depth=3,
+    exclude_dirs=['node_modules', '.git'],
+    tag_filter=["urgent", "api"]
+)
+custom_todo = custom_generator.generate_todo_markdown("/path/to/project")
+```
